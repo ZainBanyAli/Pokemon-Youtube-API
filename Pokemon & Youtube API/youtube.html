@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <input type="text" id="searchQuery" placeholder="Search for videos...">
+        <button onclick="searchVideos()">Search</button>
+        <div id="videos" class="video-container"></div>
+    </div>
+    <script>
+        const apiKey = 'AIzaSyCkQp0UL4ax5C1m3we2F62NnETOhBZK4rY';
+
+        async function searchVideos() {
+            const query = document.getElementById('searchQuery').value;
+            try {
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${query}&key=${apiKey}`);
+                const data = await response.json();
+                if (data.items) {
+                    displayVideos(data.items);
+                } else {
+                    console.error('No items in the response', data);
+                    alert('No videos found. Please try a different search query.');
+                }
+            } catch (error) {
+                console.error('Error fetching videos', error);
+                alert('Failed to fetch videos. Please try again later.');
+            }
+        }
+
+        function displayVideos(videos) {
+            const videoContainer = document.getElementById('videos');
+            videoContainer.innerHTML = '';
+            for (let i = 0; i < videos.length; i++) {
+                const video = videos[i];
+                const videoElement = document.createElement('div');
+                videoElement.classList.add('video');
+                videoElement.innerHTML = `
+                    <img src="${video.snippet.thumbnails.high.url}" alt="${video.snippet.title}">
+                `;
+                videoContainer.appendChild(videoElement);
+            }
+        }
+    </script>
+</body>
+
+</html>
